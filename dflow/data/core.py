@@ -71,7 +71,7 @@ class Node(collections.MutableMapping):
                         node.store[subkey] = Node(self.opts, self.delim)
                         node = node[subkey]
         else:
-            self.store[key] = Leaf(value)
+            self.store[key] = value
 
     def __delitem__(self, key):
         '''

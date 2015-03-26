@@ -29,7 +29,8 @@ class Node(collections.MutableMapping):
         self.opts = opts
         self.delim = delim
         self.store = {}
-        self.update(defaults)
+        if defaults:
+            self.update(defaults)
 
     def __getitem__(self, key):
         '''
@@ -39,7 +40,7 @@ class Node(collections.MutableMapping):
             keys = key.split(self.delim)
             keylen = len(keys)
             ret = self.store
-            for ind in range(keys):
+            for ind in range(keylen):
                 subkey = keys[ind]
                 val = ret[subkey]
                 if isinstance(val, Node):
@@ -59,15 +60,16 @@ class Node(collections.MutableMapping):
         if self.delim in key:
             keys = key.split(self.delim)
             keylen = len(keys)
-            node = self.store
-            for ind in range(keys):
+            node = self
+            for ind in range(keylen):
                 subkey = keys[ind]
                 subval = node.get(subkey, None)
                 if subval is None:
                     if ind == keylen - 1:
-                        node[key] = Leaf(value)
+                        node[subkey] = Leaf(value)
                     else:
-                        node[key] = Node(self.opts, self.delim)
+                        node.store[subkey] = Node(self.opts, self.delim)
+                        node = node[subkey]
         else:
             self.store[key] = Leaf(value)
 
@@ -79,7 +81,7 @@ class Node(collections.MutableMapping):
             keys = key.split(self.delim)
             keylen = len(keys)
             node = self.store
-            for ind in range(keys):
+            for ind in range(keylen):
                 subkey = keys[ind]
                 val = node[subkey]
                 if isinstance(val, Node):

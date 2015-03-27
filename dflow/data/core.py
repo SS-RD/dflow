@@ -48,8 +48,6 @@ class Node(collections.MutableMapping):
                 else:
                     if ind == keylen - 1:
                         return val
-                    else:
-                        raise KeyError(key)
         else:
             return self.store[key]
 
@@ -66,12 +64,12 @@ class Node(collections.MutableMapping):
                 subval = node.get(subkey, None)
                 if subval is None:
                     if ind == keylen - 1:
-                        node[subkey] = Leaf(value)
+                        node[subkey] = value
                     else:
                         node.store[subkey] = Node(self.opts, self.delim)
                         node = node[subkey]
         else:
-            self.store[key] = value
+            self.store[key] = Leaf(value)
 
     def __delitem__(self, key):
         '''
@@ -98,7 +96,7 @@ class Node(collections.MutableMapping):
             val = self.store[key]
             if isinstance(val, Node):
                 for ret in val:
-                    yield ret
+                    yield '{0}{1}{2}'.format(key, self.delim, ret)
             else:
                 yield key
 
